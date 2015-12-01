@@ -1,0 +1,6 @@
+---
+- name: A debug message
+  hosts: localhost
+
+  roles:
+    - debug

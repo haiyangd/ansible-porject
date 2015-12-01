@@ -1,0 +1,21 @@
+---
+- name: Prepare the environment for edit-node automation test
+  hosts: localhost
+  gather_facts: no
+
+  roles:
+    - create_vm_in_nova
+
+# - name: Wait for 30 seconds till floating-IP available
+#   hosts: localhost
+
+#   tasks:
+#     - pause: seconds=30
+
+
+# - name: Prepare the environment for edit-node automation test
+#   hosts: ins001
+
+#   roles:
+#     - rhel_common
+#     - rbenv_ruby

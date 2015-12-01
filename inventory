@@ -1,0 +1,26 @@
+[rhel6x]
+rhel66_01 ansible_ssh_host=10.8.51.222 ansible_ssh_user=cloud-user
+
+[rhel7x]
+rhel71_01 ansible_ssh_host=10.8.52.251
+rhel71_cmdCenter ansible_ssh_host=10.8.49.25
+
+[fedora]
+fedora21_01 ansible_ssh_host=10.8.50.186 ansible_ssh_user=fedora
+
+[debug]
+rhel_71_t ansible_ssh_host=10.8.48.230
+rhel_66_t ansible_ssh_host=10.8.50.185 ansible_ssh_user=cloud-user
+
+
+[edit_node_test:children]
+rhel6x
+rhel7x
+
+[igor:children]
+fedora
+
+[demo]
+
+[cobbler_server]
+cobbler_01 ansible_ssh_host=10.66.72.74

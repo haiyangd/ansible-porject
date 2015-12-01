@@ -1,0 +1,20 @@
+---
+- name: Create a new instance on QEOS for rhevm setup
+  hosts: localhost
+  gather_facts: no
+
+  roles:
+    - create_vm_in_nova
+
+- name: Wait for 30 seconds till floating-IP available
+  hosts: localhost
+
+  tasks:
+    - pause: seconds=30
+
+- name: Start new rhevm installation 
+  hosts: rhevm_new_ins
+  roles:
+    - rhel_common
+    - add_extra_pk
+    - rhevm_new_installation

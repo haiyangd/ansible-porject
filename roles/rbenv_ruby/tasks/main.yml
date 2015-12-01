@@ -1,0 +1,54 @@
+---
+- name: Check out rbenv into ~/.rbenv
+  shell: "{{ rbenv_install_cmd }} creates={{ rbenv_dir }}"
+
+# --------------- Pre Check ----------------------------------------------------------------------------
+
+- name: Pre-check to avoid duplicate entry in bash_profile
+  # TODO: handler different shell e.g.: zsh, fish
+  raw: "grep 'rbenv/bin' {{ ansible_env.HOME }}/.bash_profile"
+  register: result_1
+  ignore_errors: True
+
+- name: Pre-check to avoid duplicate entry in bash_profile
+  raw: "grep 'rbenv init' {{ ansible_env.HOME }}/.bash_profile"
+  register: result_2
+  ignore_errors: True
+
+# ------------------------------------------------------------------------------------------------------
+
+- name: Add ~/.rbenv/bin to your $PATH for access to the rbenv command-line utility
+  shell: "{{ rbenv_post_cmd_01 }}"
+  when: result_1|failed
+
+- name: Add rbenv init to your shell to enable shims and autocompletion
+  shell: "{{ rbenv_post_cmd_02 }}"
+  when: result_2|failed
+
+- name: Installing ruby-build as an rbenv plugin
+  shell: "{{ rbbuild_install_cmd }} creates={{ rbbuild_dir }}"
+
+- name: Installing dependence package
+  yum: name="{{ item }}" state=present
+  with_items:
+    - openssl-devel
+    - libyaml-devel
+    - libffi-devel
+    - readline-devel
+    - zlib-devel
+    - gdbm-devel
+    - ncurses-devel
+
+- name: Install ruby 2.x
+  command: "{{ ruby_install_cmd_01 }}"
+  when: result_1|failed
+
+- name: Make installed ruby global
+  command: "{{ ruby_install_cmd_02 }}"
+  when: result_1|failed
+
+- name: Install Cucumber and Rspec
+  gem: name="{{ item }}" state=present executable="{{ gem_executable }}"
+  with_items:
+    - cucumber
+    - rspec

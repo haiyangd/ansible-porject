@@ -1,0 +1,18 @@
+---
+- name: Make and copy the rhevm repo file
+  sudo: yes
+  template: src=rhevm.repo.j2 dest=/etc/yum.repos.d/rhevm.repo
+
+- name: Installing rhevm packages
+  sudo: yes
+  yum: name=rhevm state=present
+
+- name: Copy the answer file to remote instance
+  sudo: yes
+  template: src=answerfile.j2 dest=/tmp/answerfile
+
+- name: Run rhevm-setup with answerfile
+  sudo: yes
+  shell: "rhevm-setup --config-append=/tmp/answerfile"
+  notify:
+    - send rhevm notification

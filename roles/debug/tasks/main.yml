@@ -1,0 +1,15 @@
+---
+
+- name: A debug output to print localhost facts
+  debug: msg="Hostname is {{ ansible_ssh_host }}"
+#   notify:
+#     - send rhevm notification
+
+# - name: send rhevm notification
+#   local_action: mail
+#                 host="smtp.corp.redhat.com"
+#                 port=25
+#                 from="yaniwang@redhat.com"
+#                 to="{{ notification_mail_debug }}"
+#                 subject="New RHEVM {{ rhevm_ver }} has been installed on {{ ansible_fqdn }}"
+#                 body="You can access on http://{{ ansible_ssh_host }}"

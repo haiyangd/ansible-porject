@@ -1,0 +1,8 @@
+---
+
+- name: setup a cobbler server
+  hosts: cobbler_01
+
+  roles:
+    - fedora_dnf_common
+    - cobbler

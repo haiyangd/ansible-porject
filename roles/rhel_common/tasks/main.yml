@@ -1,0 +1,20 @@
+---
+- name: Register and auto-subscribe to available content.
+  sudo: yes
+  redhat_subscription: state=present username={{ rhn_user }} password={{ rhn_pwd }} autosubscribe=true
+
+- name: Install latest version Git
+  sudo: yes
+  yum: name=git state=latest
+
+- name: Installing Developments Tools
+  sudo: yes
+  yum: name="@Development Tools" state=present
+
+- name: Install pip
+  sudo: yes
+  easy_install: name=pip
+
+- name: Install python devel packages
+  sudo: yes
+  yum: name=python-devel state=latest

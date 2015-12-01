@@ -1,0 +1,37 @@
+---
+- name: make sure 'python-novaclient' package installed
+  yum: name=python-novaclient state=latest
+  register: result
+  ignore_errors: True
+
+- name: use pip install 'python-novaclient', if yum failed
+  pip: name=python-novaclient
+  when: result | failed
+
+- name: launch an instance
+  nova_compute:
+    state: present
+    login_username: "{{ qeos_usr }}"
+    login_password: "{{ qeos_pwd }}"
+    login_tenant_name: "{{ qeos_tenant_name }}"
+    name: "{{ qeos_vm_name }}"
+    auth_url: "{{ qeos_auth_url }}"
+    key_name: "{{ qeos_key_name }}"
+    image_id: "{{ qeos_image_id }}"
+
+    flavor_id: "{{ qeos_flavor_id }}"
+    wait_for: 200
+
+    security_groups: default
+    auto_floating_ip: yes
+
+- name: get the floating-ip from new instance
+  shell: "{{ nova_cmd }} list | grep {{ qeos_vm_name }} | awk -F',' '{print $2}' | awk -F';' '{print $1}'"
+  register: result
+
+
+- name: add new instance into inventory
+  add_host: hostname="{{ qeos_vm_name }}"
+            groups=rhevm_new_ins
+            ansible_ssh_host={{ result.stdout | trim }}
+            ansible_ssh_user={{ ssh_user_name }}

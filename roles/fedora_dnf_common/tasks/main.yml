@@ -1,0 +1,40 @@
+---
+
+- name: upgrade all packages
+  dnf: name=* state=latest
+
+- name: install the 'Development tools' package group
+  environment: redhat_proxy
+  dnf: name="@Development tools" state=present
+
+- name: install yum-utils package
+  environment: redhat_proxy
+  shell: dnf install yum-utils -y 
+  args: 
+    creates: /usr/bin/repomanage
+
+- name: Groupinstall virtualization packages
+  environment: redhat_proxy
+  dnf: name="@virtualization" state=present
+
+- name: install virtualaztion and other important packages
+  environment: redhat_proxy
+  dnf: name="{{ item }}" state=present
+  with_items:
+    - virt-manager
+    - qemu
+    - libvirt-daemon-qemu
+    - qemu-kvm
+    - qemu-kvm-tools
+    - python-devel
+    - libxml2-devel
+    - libxslt-devel
+    - python-bottle
+    - libvirt-python
+    - python-lxml
+    - parted
+    - lvm2
+    - openssh-clients
+    - isomd5sum 
+    - PyYAML
+    - syslinux

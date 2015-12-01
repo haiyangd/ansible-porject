@@ -1,0 +1,16 @@
+<network> 
+    <name>{{ v_netowrk_name }}</name> 
+    <forward mode='nat'/> 
+    <bridge name='virbr1'/> 
+    <ip address="{{ v_ip }}" netmask="{{ v_netmask }}">
+        <tftp root="{{ v_tftp_root }}" /> 
+        <dhcp> <range start="{{ v_dhcp_start }}" end="{{ v_dhcp_end }}" /> 
+        <bootp file='pxelinux.0' /> </dhcp> 
+    </ip> 
+    <ip family="ipv6" address="2001:cb8:ca2:3::1">
+        <dhcp>
+            <range start="2001:cb8:ca2:3:1::10" end="2001:cb8:ca2:3:1::ff" />
+        </dhcp>
+	<bootp file='pxelinux.0' />
+    </ip>
+</network> 

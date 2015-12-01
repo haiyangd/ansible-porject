@@ -1,0 +1,7 @@
+---
+
+- name: Copy the pk to the tmp dir
+  copy: src={{ extra_pk_name }} dest=/tmp
+
+- name: add the new pk into authorized key file
+  shell: "cat /tmp/{{ extra_pk_name }} >> ~/.ssh/authorized_keys"

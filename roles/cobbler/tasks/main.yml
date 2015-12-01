@@ -1,0 +1,93 @@
+---
+
+- name: install cobbler server
+  environment: cobbler_proxy_env
+  dnf: name="{{ item }}" state=present
+  with_items:
+    - cobbler
+    - cobbler-web
+    - dnsmasq
+    - httpd
+    - rsync
+    - tftp-server
+    - xinetd
+
+- name: get igor scripts
+  git: >
+       repo=http://10.8.48.252/yaniwang/rhevh-igor.git
+       dest=/home/rhevh-igor
+       clone=yes
+       accept_hostkey=yes
+
+- name: get auto-testcases scripts
+  git: >
+       repo=http://10.8.48.252/yaniwang/rhevh-auto-testcases.git
+       dest=/home/rhevh-auto-testcases
+       clone=yes
+       accept_hostkey=yes
+
+- name: Copy the cobbler_web.conf file
+  template: src=cobbler_web.j2 dest=/etc/httpd/conf.d/cobbler_web.conf
+
+- name: shutdown SELinux
+  selinux: state=disabled
+
+- name: modify the SELinux conf file
+  shell: sed -i 's/enforcing/disabled/g' /etc/selinux/config
+
+- name: turn off the firewall
+  service: name=iptables state=stopped
+
+- name: disable firewall in 35 level
+  shell: chkconfig --level 35 iptables off 
+
+- name: clear all the iptables
+  shell: iptables -F
+
+- name: install dhcp server package
+  environment: cobbler_proxy_env
+  dnf: name=dhcp-server state=present
+
+- name: copy dhcp conf files
+  template: src=dhcp_template.j2 dest=/etc/cobbler/dhcp.template
+
+- name: start dhcpd service
+  service: name=dhcpd state=started
+
+- name: replace cobbler server ip address
+  shell: "sed -i 's/^server:.*$/server: 192.168.20.2/g' /etc/cobbler/settings"
+
+- name: replace cobbler next server ip address
+  shell: "sed  -i 's/^next_server:.*$/next_server: 192.168.20.2/g' /etc/cobbler/settings"
+
+- name: enable cobbler management dhcp
+  shell: "sed -i 's/manage_tftpd: 0/manage_tftpd: 1/g' /etc/cobbler/settings"
+
+- name: start cobbler sevices
+  service: name="{{ item }}" state=started
+  with_items:
+    - httpd
+    - cobblerd
+    - xinetd
+    - tftp
+
+- name: check on the httpd cobblerd xinetd service
+  shell: chkconfig "{{ item }}" on
+  with_items:
+    - httpd
+    - cobblerd
+    - xinetd
+    - tftp
+
+- name: create /etc/xinetd.d/rsync file
+  template: src=xinetd_rsync.j2 dest=/etc/xinetd.d/rsync
+
+- name: create /etc/xinetd.d/tftp file
+  template: src=xinetd_tftp.j2 dest=/etc/xinetd.d/tftp
+
+# If cobbler and cobber_web run behind apache/httpd, then need this modification to make `/cblr/svc/*` working
+- name: Add 'apache' group into 'user.conf'
+  raw: echo 'apache = ""' >> /etc/cobbler/user.conf
+
+- name: reboot system
+  shell: reboot

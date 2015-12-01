@@ -1,0 +1,6 @@
+---
+- name: Lanuch a nova instance
+  hosts: rhel71_cmdCenter
+
+  roles:
+    - debug

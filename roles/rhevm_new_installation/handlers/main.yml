@@ -1,0 +1,10 @@
+---
+
+- name: send rhevm notification
+  local_action: mail
+                host="smtp.corp.redhat.com"
+                port=25
+                from="yaniwang@redhat.com"
+                to="{{ notification_mail }}"
+                subject="New RHEVM {{ rhevm_ver }} has been installed on {{ ansible_fqdn }}"
+                body="You can access on http://{{ ansible_ssh_host }} Access via SSH {{ ssh_user_name }}@{{ ansible_ssh_host }}"
