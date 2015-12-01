@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Purpose
 
 This project intend to automate the process with `ansible` for setup of
@@ -23,3 +24,7 @@ This project intend to automate the process with `ansible` for setup of
 		$> cp ansible.cfg.example ansible.cfg
 
 2. add / replace real value into ansible.cfg
+=======
+# ansible-porject
+ansible-porject 
+>>>>>>> origin/master
